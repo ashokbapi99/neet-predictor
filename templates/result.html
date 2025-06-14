@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NEET Rank Predictor - Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f7fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background: #0069d9;
+            color: white;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header text-center">
+                <h3>🎯 NEET Rank Predictor Result</h3>
+            </div>
+            <div class="card-body">
+
+                {% if not_qualified %}
+                    <div class="alert alert-danger text-center">
+                        <h5>❌ You have not qualified NEET.</h5>
+                        <p>Cutoff for {{ category }}: <strong>{{ cutoff }}</strong> marks.</p>
+                    </div>
+                {% else %}
+                    {% if marks == 720 %}
+                        <div class="alert alert-success text-center">
+                            🏆 <strong>Topper!</strong> You scored full marks!
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3 text-center">
+                        <h5>Estimated Percentile</h5>
+                        <span class="badge bg-success fs-5">{{ percentile }}%</span>
+                    </div>
+
+                    <div class="mb-3 text-center">
+                        <h5>Predicted Rank</h5>
+                        <span class="badge bg-warning text-dark fs-5">#{{ rank }}</span>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <h5>Expected Colleges</h5>
+                        {% if colleges %}
+                            <ul class="list-group list-group-flush mt-2">
+                                {% for college in colleges %}
+                                    <li class="list-group-item">{{ college }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted">No colleges predicted at this rank.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="alert alert-info mt-4" role="alert">
+                        <strong>Note:</strong> This prediction is based on NEET 2023–2024 data. NEET 2025 results may vary due to exam difficulty and other factors.
+                    </div>
+                {% endif %}
+
+                <div class="text-center mt-4">
+                    <a href="/" class="btn btn-primary">🔁 Try Again</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
