@@ -4,52 +4,49 @@ app = Flask(__name__)
 
 def estimate_rank_percentile(marks):
     top_ranks = {
-        720: 1,
-        719: 3,
-        718: 6,
-        717: 10,
-        716: 14,
-        715: 20,
-        714: 28,
-        713: 37,
-        712: 47,
-        711: 58,
-        710: 70
+        686: 1,
+        685: 5,
+        684: 10,
+        683: 15,
+        682: 25,
+        681: 35,
+        680: 50,
+        679: 70,
+        678: 90,
+        677: 120,
+        676: 160
     }
 
-    total_candidates = 2090000  # Based on NEET 2023 stats
+    top_score = 686
+    total_candidates = 2300000  # Update as per NEET 2025 stats
 
     if marks in top_ranks:
         rank = top_ranks[marks]
-    elif marks >= 700:
-        rank = int(100 + (710 - marks) * 80)
-    elif marks >= 650:
-        rank = int(1000 + (700 - marks) * 150)
-    elif marks >= 600:
-        rank = int(2500 + (650 - marks) * 300)
-    elif marks >= 550:
-        rank = int(7500 + (600 - marks) * 600)
-    elif marks >= 500:
-        rank = int(15000 + (550 - marks) * 1000)
+    elif marks >= 670:
+        rank = int(200 + (686 - marks) * 80)
+    elif marks >= 630:
+        rank = int(1200 + (670 - marks) * 150)
+    elif marks >= 580:
+        rank = int(4000 + (630 - marks) * 300)
+    elif marks >= 530:
+        rank = int(9000 + (580 - marks) * 600)
+    elif marks >= 480:
+        rank = int(18000 + (530 - marks) * 1000)
     elif marks >= 400:
-        rank = int(30000 + (500 - marks) * 1200)
+        rank = int(33000 + (480 - marks) * 1200)
     elif marks >= 300:
-        rank = int(45000 + (400 - marks) * 1500)
+        rank = int(50000 + (400 - marks) * 1500)
     elif marks >= 200:
-        rank = int(60000 + (300 - marks) * 1800)
+        rank = int(70000 + (300 - marks) * 1800)
     elif marks >= 100:
-        rank = int(90000 + (200 - marks) * 2000)
+        rank = int(100000 + (200 - marks) * 2000)
     else:
-        rank = int(130000 + (100 - marks) * 3000)
+        rank = int(140000 + (100 - marks) * 3000)
 
-    # Ensure rank is not more than total candidates
     rank = min(max(rank, 1), total_candidates)
-
-    # Percentile estimation
     percentile = round(((total_candidates - rank) / total_candidates) * 100, 3)
 
     return rank, percentile
-
 
 
 @app.route('/')
