@@ -86,7 +86,7 @@ def predict():
     "EWS": 125
 }
 
-    cutoff = cutoffs.get(category, 137)
+    cutoff = cutoffs.get(category, 145)
     not_qualified = marks < cutoff
 
     # Predicted colleges
