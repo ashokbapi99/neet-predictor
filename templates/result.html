@@ -39,11 +39,11 @@
                         <p>Cutoff for {{ category }}: <strong>{{ cutoff }}</strong> marks.</p>
                     </div>
                 {% else %}
-                    {% if marks == 720 %}
-                        <div class="alert alert-success text-center">
-                            🏆 <strong>Topper!</strong> You scored full marks!
-                        </div>
-                    {% endif %}
+                    {% if topper_note %}
+                    <div style="background-color: #d4edda; padding: 10px; border-left: 5px solid green; font-weight: bold; font-size: 18px; margin-bottom: 20px;">
+                     {{ topper_note }}
+                     </div>
+                {% endif %}
 
                     <div class="mb-3 text-center">
                         <h5>Estimated Percentile</h5>

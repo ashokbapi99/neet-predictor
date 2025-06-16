@@ -77,6 +77,11 @@ def predict():
     # Calculate rank and percentile
     rank, percentile = estimate_rank_percentile(marks)
 
+     # Topper message if Rank 1
+    topper_note = ""
+    if rank == 1:
+        topper_note = "🏆 Topper! You scored Rank 1 in NEET 2025!"
+
     # Category-wise cutoff (you can fine-tune values as needed)
     cutoffs = {
     "General": 145,
@@ -99,7 +104,8 @@ def predict():
         percentile=percentile, 
         cutoff=cutoff, 
         not_qualified=not_qualified,
-        colleges=colleges
+        colleges=colleges,
+        topper_note=topper_note
     )
 
 
