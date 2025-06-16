@@ -79,12 +79,12 @@ def predict():
 
     # Category-wise cutoff (you can fine-tune values as needed)
     cutoffs = {
-        "General": 137,
-        "OBC": 107,
-        "SC": 107,
-        "ST": 107,
-        "EWS": 120
-    }
+    "General": 145,
+    "OBC": 125,
+    "SC": 125,
+    "ST": 125,
+    "EWS": 125
+}
 
     cutoff = cutoffs.get(category, 137)
     not_qualified = marks < cutoff
