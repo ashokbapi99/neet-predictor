@@ -3,111 +3,95 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 
 def estimate_rank_percentile(marks):
-    top_ranks = {
-        686: 1,
-        685: 5,
-        684: 10,
-        683: 15,
-        682: 25,
-        681: 35,
-        680: 50,
-        679: 70,
-        678: 90,
-        677: 120,
-        676: 160
-    }
+    total_candidates = 2035851  # From NTA 2025 data
 
-    top_score = 686
-    total_candidates = 2300000  # Update as per NEET 2025 stats
+    marks_rank_map = [
+        (686, 1), (682, 2), (681, 3), (678, 8), (650, 77),
+        (635, 170), (630, 250), (622, 412), (609, 845),
+        (607, 981), (601, 1302), (589, 2341), (577, 4000),
+        (571, 5123), (563, 7296), (549, 12860),
+        (540, 17370), (528, 25541), (525, 27698), (515, 36843),
+        (481, 76510), (478, 80336), (459, 107944),
+        (435, 146846), (402, 206050), (398, 213371),
+        (302, 436777), (257, 577330), (228, 684232),
+        (172, 937041), (135, 1152192), (104, 1391647),
+        (69, 1717603), (35, 2035851)
+    ]
 
-    if marks in top_ranks:
-        rank = top_ranks[marks]
-    elif marks >= 670:
-        rank = int(200 + (686 - marks) * 80)
-    elif marks >= 630:
-        rank = int(1200 + (670 - marks) * 150)
-    elif marks >= 580:
-        rank = int(4000 + (630 - marks) * 300)
-    elif marks >= 530:
-        rank = int(9000 + (580 - marks) * 600)
-    elif marks >= 480:
-        rank = int(18000 + (530 - marks) * 1000)
-    elif marks >= 400:
-        rank = int(33000 + (480 - marks) * 1200)
-    elif marks >= 300:
-        rank = int(50000 + (400 - marks) * 1500)
-    elif marks >= 200:
-        rank = int(70000 + (300 - marks) * 1800)
-    elif marks >= 100:
-        rank = int(100000 + (200 - marks) * 2000)
+    for i in range(len(marks_rank_map) - 1):
+        high_marks, high_rank = marks_rank_map[i]
+        low_marks, low_rank = marks_rank_map[i + 1]
+
+        if high_marks >= marks >= low_marks:
+            rank = int(high_rank + ((high_marks - marks) / (high_marks - low_marks)) * (low_rank - high_rank))
+            break
     else:
-        rank = int(140000 + (100 - marks) * 3000)
+        rank = total_candidates
 
-    rank = min(max(rank, 1), total_candidates)
     percentile = round(((total_candidates - rank) / total_candidates) * 100, 3)
-
     return rank, percentile
 
+def predict_college(rank):
+    colleges = [
+        (47, "All India Institute of Medical Sciences (AIIMS)"),
+        (87, "Maulana Azad Medical College (MAMC)"),
+        (129, "VMMC & Safdarjung Hospital"),
+        (277, "JIPMER"),
+        (567, "Lady Hardinge Medical College"),
+        (781, "Seth GS Medical College"),
+        (1007, "IMS-BHU"),
+        (1529, "KGMU"),
+        (2372, "BMCRI"),
+        (5000, "JSS Medical College"),
+        (10000, "Christian Medical College (CMC)"),
+        (15000, "Kasturba Medical College (KMC)"),
+        (20000, "Sri Ramachandra Medical College"),
+        (25000, "St. John's National Academy of Health Sciences"),
+        (30000, "HIMSR"),
+        (35000, "Amrita School of Medicine"),
+        (40000, "Dr. D.Y. Patil Vidyapeeth"),
+        (45000, "K.S. Hegde Medical Academy")
+    ]
+    return [name for r, name in colleges if rank <= r]
 
 @app.route('/')
 def index():
     return render_template('index.html')
-
-def predict_college(rank, category):
-    # Dummy example logic — you can refine it based on real cutoffs later
-    if rank <= 1000:
-        return ["AIIMS Delhi", "JIPMER Puducherry"]
-    elif rank <= 5000:
-        return ["Maulana Azad Medical College", "CMC Vellore"]
-    elif rank <= 15000:
-        return ["BHU Varanasi", "KGMU Lucknow"]
-    elif rank <= 25000:
-        return ["BJMC Pune", "GMC Nagpur"]
-    elif rank <= 40000:
-        return ["ESIC Medical College", "Government Medical Colleges (State)"]
-    else:
-        return ["Private Medical Colleges", "Deemed Universities"]
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
     marks = int(request.form['marks'])
     category = request.form['category'].strip().upper()
 
-    # Calculate rank and percentile
     rank, percentile = estimate_rank_percentile(marks)
 
-     # Topper message if Rank 1
-    topper_note = ""
-    if rank == 1:
-        topper_note = "🏆 Topper! You scored Rank 1 in NEET 2025!"
+    topper_note = "🏆 Topper! You scored Rank 1 in NEET 2025!" if rank == 1 else ""
 
-    # Category-wise cutoff (you can fine-tune values as needed)
     cutoffs = {
-    "General": 145,
-    "OBC": 125,
-    "SC": 125,
-    "ST": 125,
-    "EWS": 125
-}
+        "GENERAL": 144,
+        "GENERAL-PH": 127,
+        "OBC": 113,
+        "SC": 113,
+        "ST": 113,
+        "EWS": 144,
+        "SC/OBC-PH": 113,
+        "ST-PH": 113
+    }
 
-    cutoff = cutoffs.get(category, 145)
+    cutoff = cutoffs.get(category, 144)
     not_qualified = marks < cutoff
+    colleges = predict_college(rank) if not not_qualified else []
 
-    # Predicted colleges
-    colleges = predict_college(rank, category) if not not_qualified else []
-
-    return render_template("result.html", 
-        marks=marks, 
+    return render_template("result.html",
+        marks=marks,
         category=category,
-        rank=rank, 
-        percentile=percentile, 
-        cutoff=cutoff, 
+        rank=rank,
+        percentile=percentile,
+        cutoff=cutoff,
         not_qualified=not_qualified,
         colleges=colleges,
         topper_note=topper_note
     )
-
 
 if __name__ == '__main__':
     app.run(debug=True)
