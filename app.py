@@ -5,6 +5,10 @@ app = Flask(__name__)
 def estimate_rank_percentile(marks):
     total_candidates = 2035851  # From NTA 2025 data
 
+    # Handle marks above top range
+    if marks >= 686:
+        return 1, 100.0
+
     marks_rank_map = [
         (686, 1), (682, 2), (681, 3), (678, 8), (650, 77),
         (635, 170), (630, 250), (622, 412), (609, 845),
@@ -52,7 +56,14 @@ def predict_college(rank):
         (40000, "Dr. D.Y. Patil Vidyapeeth"),
         (45000, "K.S. Hegde Medical Academy")
     ]
-    return [name for r, name in colleges if rank <= r]
+
+    predicted = [name for r, name in colleges if rank <= r]
+    
+    # Show default colleges if no match found
+    if not predicted:
+        predicted = ["Any Private Medical College", "Any Deemed University"]
+
+    return predicted
 
 @app.route('/')
 def index():
